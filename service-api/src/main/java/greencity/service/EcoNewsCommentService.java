@@ -65,14 +65,6 @@ public interface EcoNewsCommentService {
     void like(Long id, UserVO user);
 
     /**
-     * Method returns count of likes to certain {@link EcoNewsCommentVO} specified
-     * by id.
-     *
-     * @param amountCommentLikesDto dto with id and count likes for comments.
-     */
-    void countLikes(AmountCommentLikesDto amountCommentLikesDto);
-
-    /**
      * Method to count replies to certain {@link EcoNewsCommentVO}.
      *
      * @param id specifies parent comment to all replies

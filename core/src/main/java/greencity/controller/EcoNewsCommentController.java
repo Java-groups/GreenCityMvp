@@ -16,8 +16,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -165,16 +163,6 @@ public class EcoNewsCommentController {
     @PostMapping("like")
     public void like(@RequestParam("id") Long id, @ApiIgnore @CurrentUser UserVO user) {
         ecoNewsCommentService.like(id, user);
-    }
-
-    /**
-     * Method to like/dislike comment and count likes.
-     *
-     * @param amountCommentLikesDto dto with id and count likes for comments.
-     */
-    @MessageMapping("/likeAndCount")
-    public void getCountOfLike(@Payload AmountCommentLikesDto amountCommentLikesDto) {
-        ecoNewsCommentService.countLikes(amountCommentLikesDto);
     }
 
     /**

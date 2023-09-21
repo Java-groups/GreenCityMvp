@@ -19,7 +19,6 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +35,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private EcoNewsCommentRepo ecoNewsCommentRepo;
     private EcoNewsService ecoNewsService;
     private ModelMapper modelMapper;
-    private final SimpMessagingTemplate messagingTemplate;
     private final greencity.rating.RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
     private final EcoNewsRepo ecoNewsRepo;
@@ -203,26 +201,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
         }
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
-    }
-
-    /**
-     * Method returns count of likes to certain
-     * {@link greencity.entity.EcoNewsComment} specified by id.
-     *
-     * @param amountCommentLikesDto dto with id and count likes for comments.
-     */
-    @Override
-    @Transactional
-    public void countLikes(AmountCommentLikesDto amountCommentLikesDto) {
-        EcoNewsComment comment = ecoNewsCommentRepo.findById(amountCommentLikesDto.getId()).orElseThrow(
-            () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
-        boolean isLiked = comment.getUsersLiked().stream().map(User::getId)
-            .anyMatch(x -> x.equals(amountCommentLikesDto.getUserId()));
-        amountCommentLikesDto.setLiked(isLiked);
-        int size = comment.getUsersLiked().size();
-        amountCommentLikesDto.setAmountLikes(size);
-        messagingTemplate
-            .convertAndSend("/topic/" + amountCommentLikesDto.getId() + "/comment", amountCommentLikesDto);
     }
 
     /**
