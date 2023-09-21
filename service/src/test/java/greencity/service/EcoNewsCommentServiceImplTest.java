@@ -52,8 +52,6 @@ class EcoNewsCommentServiceImplTest {
     @Mock
     private ModelMapper modelMapper;
     @Mock
-    private SimpMessagingTemplate messagingTemplate;
-    @Mock
     private HttpServletRequest httpServletRequest;
     @Mock
     EcoNewsRepo ecoNewsRepo;
