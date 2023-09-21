@@ -27,7 +27,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -51,8 +50,6 @@ class EcoNewsCommentServiceImplTest {
     private EcoNewsService ecoNewsService;
     @Mock
     private ModelMapper modelMapper;
-    @Mock
-    private SimpMessagingTemplate messagingTemplate;
     @Mock
     private HttpServletRequest httpServletRequest;
     @Mock
@@ -379,35 +376,6 @@ class EcoNewsCommentServiceImplTest {
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class, () -> ecoNewsCommentService.like(commentId, userVO));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
-    }
-
-    @Test
-    void countLikesCommentThatDoesntExistsThrowException() {
-        AmountCommentLikesDto amountCommentLikesDto = AmountCommentLikesDto.builder()
-            .id(1L)
-            .amountLikes(2)
-            .build();
-
-        when(ecoNewsCommentRepo.findById(amountCommentLikesDto.getId())).thenReturn(Optional.empty());
-        BadRequestException badRequestException =
-            assertThrows(BadRequestException.class, () -> ecoNewsCommentService.countLikes(amountCommentLikesDto));
-        assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, badRequestException.getMessage());
-    }
-
-    @Test
-    void countLikes() {
-        AmountCommentLikesDto amountCommentLikesDto = AmountCommentLikesDto.builder()
-            .id(1L)
-            .amountLikes(2)
-            .build();
-        EcoNewsComment ecoNewsComment = ModelUtils.getEcoNewsComment();
-        ecoNewsComment.setUsersLiked(new HashSet<>());
-
-        when(ecoNewsCommentRepo.findById(amountCommentLikesDto.getId())).thenReturn(Optional.of(ecoNewsComment));
-        doNothing().when(messagingTemplate).convertAndSend("/topic/"
-            + amountCommentLikesDto.getId() + "/comment", amountCommentLikesDto);
-        ecoNewsCommentService.countLikes(amountCommentLikesDto);
-        verify(ecoNewsCommentRepo).findById(1L);
     }
 
     @Test
